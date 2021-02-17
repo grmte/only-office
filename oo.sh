@@ -51,7 +51,7 @@ docker run --net onlyoffice --privileged -i -t -d --restart=always --name onlyof
 
 # Ref: https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/4e33d29eae33f50fe724a54ce13142c8fe964b2d/README.md#installing-mysql
 # https://github.com/ONLYOFFICE/Docker-MailServer
-docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-community-server \
+docker run --net onlyoffice --privileged=true -i -t -d --restart=always --name onlyoffice-community-server \
     -p 80:80 -p 5222:5222 -p 443:443 \
     -v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data \
     -v /app/onlyoffice/CommunityServer/logs:/var/log/onlyoffice \
@@ -66,6 +66,7 @@ docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-communit
     -e MAIL_SERVER_DB_HOST=onlyoffice-mysql-server \
     -e MAIL_SERVER_DB_NAME=onlyoffice_mailserver \
     -e MAIL_SERVER_DB_PORT=3306 \
-    -e MAIL_SERVER_DB_USER= root \
+    -e MAIL_SERVER_DB_USER=mail_admin \
+    -e MAIL_SERVER_DB_PASS=Isadmin123 \
     -e DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server \
     onlyoffice/communityserver
