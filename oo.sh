@@ -12,10 +12,8 @@ group_concat_max_len = 2048
 log-error = /var/log/mysql/error.log" > /app/onlyoffice/mysql/conf.d/onlyoffice.cnf
 
 echo "CREATE USER 'onlyoffice_user'@'localhost' IDENTIFIED BY 'onlyoffice_pass';
-CREATE USER 'mail_admin'@'localhost' IDENTIFIED BY 'Isadmin123';
 GRANT ALL PRIVILEGES ON * . * TO 'root'@'%' IDENTIFIED BY 'my-secret-pw';
 GRANT ALL PRIVILEGES ON * . * TO 'onlyoffice_user'@'%' IDENTIFIED BY 'onlyoffice_pass';
-GRANT ALL PRIVILEGES ON * . * TO 'mail_admin'@'%' IDENTIFIED BY 'Isadmin123';
 FLUSH PRIVILEGES;" > /app/onlyoffice/mysql/initdb/setup.sql
 
 
@@ -36,19 +34,6 @@ docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-document
     -v /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
     onlyoffice/documentserver
 
-docker run --net onlyoffice --privileged -i -t -d --restart=always --name onlyoffice-mail-server \
-    -p 25:25 -p 143:143 -p 587:587 \
-    -v /app/onlyoffice/MailServer/data:/var/vmail \
-    -v /app/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver \
-    -v /app/onlyoffice/MailServer/logs:/var/log \
-    -e MYSQL_SERVER_ROOT_PASSWORD=my-secret-pw \
-    -e MYSQL_SERVER_DB_NAME=onlyoffice \
-    -e MYSQL_SERVER_HOST=onlyoffice-mysql-server \
-    -e MYSQL_SERVER_USER=mail_admin \
-    -e MYSQL_SERVER_PASS=Isadmin123 \
-    -h yourdomain.com \
-    onlyoffice/mailserver
-
 # Ref: https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/4e33d29eae33f50fe724a54ce13142c8fe964b2d/README.md#installing-mysql
 # https://github.com/ONLYOFFICE/Docker-MailServer
 docker run --net onlyoffice --privileged=true -i -t -d --restart=always --name onlyoffice-community-server \
@@ -63,10 +48,5 @@ docker run --net onlyoffice --privileged=true -i -t -d --restart=always --name o
     -e MYSQL_SERVER_HOST=onlyoffice-mysql-server \
     -e MYSQL_SERVER_USER=onlyoffice_user \
     -e MYSQL_SERVER_PASS=onlyoffice_pass \
-    -e MAIL_SERVER_DB_HOST=onlyoffice-mysql-server \
-    -e MAIL_SERVER_DB_NAME=onlyoffice_mailserver \
-    -e MAIL_SERVER_DB_PORT=3306 \
-    -e MAIL_SERVER_DB_USER=mail_admin \
-    -e MAIL_SERVER_DB_PASS=Isadmin123 \
     -e DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server \
     onlyoffice/communityserver
